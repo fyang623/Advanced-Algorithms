@@ -1,0 +1,53 @@
+\documentclass{article}[11pt]
+
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.77in}
+\addtolength{\textheight}{0.3in}
+
+\begin{document}
+
+\newcommand{\E}{\textbf{E}}
+\newcommand{\var}{\textbf{var}}
+
+\begin{center}
+CMSC 651, Spring 2018, University of Maryland \\
+HW4, due as PDF to the address \emph{cmsc651.umd@gmail.com} by 11:59PM on April 18, 2018
+\end{center}
+
+\medskip \noindent
+\textbf{Notes:} (i) Please work on this with your group (one writeup per group). Consulting
+other sources (including the Web) is not allowed. 
+(ii) Write your solutions neatly and \emph{include your names}; if you are able to make partial progress by making some
+additional assumptions, then \textbf{state these assumptions clearly and submit
+your partial solution}. 
+(iii) \textbf{Please make the subject line of your email} ``\textit{651 HW4}" followed by
+your full name, and email a PDF to \emph{cmsc651.umd@gmail.com}: PDF generated from Word or LaTeX strongly encouraged. 
+
+ 
+\medskip \noindent
+1. Complete the quick proof we showed in class that the sum of the elements of an $n$-element array can be computed using $n$ processors and in $O(\log n)$ time on an EREW PRAM. ~~\textbf{(12 points)}
+
+\medskip \smallskip \noindent
+2. In studying how to do processor emulation with fewer processors, we considered the following algorithm $A$ on a DAG $G = (V,E)$:
+
+\begin{verbatim}
+i = 0;
+while (G is not empty) {
+   i = i + 1;
+   L(i) = current set of sources (nodes with no incoming edges) in G;
+   Remove L(i) (and all edges incident on vertices in L(i)) from G;
+}
+\end{verbatim}
+Suppose $A$ partitions $V$ into $L(1), L(2), \ldots, L(\ell)$. We used the following fact without proof, in proving that our processor assignment led to a $2$-approximation of the maximum completion time: \emph{$\ell$ equals the number of vertices in a longest (directed) path in $G$}. Prove this fact.
+ ~~\textbf{(15 points)}
+
+\medskip \noindent
+3. Problem 5.3 from the Lau-Ravi-Singh book that is posted under ``Resources''.
+~~\textbf{(10 + 8 points)}
+
+\medskip \noindent
+4. Problem 5.6 from the Lau-Ravi-Singh book that is posted under ``Resources''. (The notation ``$X - Y$ paths'' does not mean ``$X$ minus $Y$'', but refers to ``from $X$ to $Y$''.) 
+~~\textbf{(15 points)}
+
+\end{document}

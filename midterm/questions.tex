@@ -1,0 +1,62 @@
+\documentclass{article}[11pt]
+
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.77in}
+\addtolength{\textheight}{0.3in}
+
+\begin{document}
+
+\newcommand{\E}{\textbf{E}}
+\newcommand{\var}{\textbf{var}}
+
+\begin{center}
+CMSC 651, Spring 2018, University of Maryland \\
+Mid-term exam, due as PDF to the address \emph{cmsc651.umd@gmail.com} by 11:59 \textbf{AM} (i.e., just before noon) on March 16, 2018
+\end{center}
+
+\medskip \noindent
+\textbf{Notes:} 
+
+\medskip \noindent
+(i) Please work on this \textbf{by yourself (not with your group)}. You can consult \emph{all the notes under ``Resources'' in Piazza}; consulting anyone or other sources (including the Web) is not allowed. 
+
+\medskip \noindent
+(ii) Write your solutions neatly and \emph{include your name}; if you are able to make partial progress by making some
+additional assumptions, then \textbf{state these assumptions clearly and submit
+your partial solution}. 
+
+\medskip \noindent
+(iii) \textbf{Please make the subject line of your email} ``\textit{651 Mid-term}" followed by
+your full name, and email a PDF to \emph{cmsc651.umd@gmail.com}: PDF generated from Word or LaTeX strongly encouraged. 
+
+ \medskip \medskip \noindent
+1. Let $X$ and $Y$ be \emph{independent} random variables with $Y$ never zero, such that
+$\E[X] = a$, $\E[Y] = b$, and $\E\left[\frac{1}{Y}\right] = c$. What is $\E\left[\frac{X}{Y}\right]$? Justify your answer. ~~\textbf{(5 points)} 
+
+\medskip \medskip \noindent
+2. 
+Let $p_n(k)$ be the number of permutations of the
+set $\{1, 2, \ldots, n\}$, which have exactly $k$ fixed points. Prove that
+$\sum_{k=0}^n k \cdot p_n(k) = n!$. (An element $i$ is called a fixed point of the permutation $f$ if $f(i) = i$.) \textbf{Hint: Use the linearity of expectation.} ~~\textbf{(10 points)} 
+
+\medskip \medskip \noindent
+3. 
+While greedy algorithms are often good when working with a single objective function, they are usually not so in the presence of \emph{multiple} objective functions: randomization often helps here. 
+
+Suppose we have a set-cover instance as in Section 1.2 of Williamson-Shmoys, but now with \emph{two} weight functions:
+\begin{itemize}
+\item we have two non-negative weights $v_j$ and $w_j$ for each given $S_j$;
+\item we are given reals $V$ and $W$ and are promised that there exists some cover $I$ (i.e., as in Williamson-Shmoys, $I \subseteq \{1, 2, \ldots, m\}$ is such that $\bigcup_{j \in I} S_j = E$), with 
+$\sum_{j \in I} v_i \leq V$ and $\sum_{j \in I} w_i \leq W$.
+\end{itemize}
+Our task is to efficiently find a cover that is ``good'' with respect to both weight functions. Give a randomized polynomial-time algorithm that finds (with high probability) a cover $C \subseteq \{1, 2, \ldots, m\}$ such that $\bigcup_{j \in C} S_j = E$, with $\sum_{j \in C} v_i \leq 3 V \ln n$ and $\sum_{j \in C} w_i \leq 3 W \ln n$; here, $n = |E|$ as in Williamson-Shmoys. 
+~~\textbf{(15 points)} 
+
+\medskip \medskip \noindent
+4. 
+The proof of Theorem 3.7 in Williamson-Shmoys required a rounding of $p_j$ for all long jobs $j$: we implicitly constructed the intervals $[T/k^2, 2T/k^2), ~[2T/k^2, 3T/k^2), ~[3T/k^2, 4T/k^2), \ldots$, and whichever interval $p_j$ fell in, we rounded $p_j$ to the left end-point of this interval. Note that all interval-lengths here are the same (i.e., equal to $T/k^2$). Design a different rounding-down scheme for the $p_j$ in which these interval-lengths are approximately geometrically increasing (i.e., the $i^{th}$ interval has length roughly $a \cdot b^i$, where $b > 1$) to design a faster PTAS: one in which the $n^{O(k^2)}$ term in the run-time decreases to $n^{O(k \log k)}$. ~~\textbf{(10 points)} 
+
+
+
+\end{document}

@@ -1,0 +1,186 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{titling}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{adjustbox}
+\usepackage[framemethod=TikZ]{mdframed}
+
+\topmargin 0.0in
+\oddsidemargin 0.0in
+\textwidth 6.5in
+\textheight 9.0in
+\headheight 0.0in
+\headsep 0.0in
+\linespread{1.0}
+
+\pretitle{\begin{center}\LARGE}
+\posttitle{\par\end{center}}
+\preauthor{\begin{center}\large\begin{tabular}[t]{c}}
+\postauthor{\end{tabular}\par\end{center}}
+\predate{\begin{center}}
+\postdate{\par\end{center}}
+
+\setlength{\droptitle}{-5em}
+
+\setlength\parindent{0pt}
+
+\DeclareMathOperator{\Expect}{E}
+\DeclareMathOperator{\Variance}{Var}
+
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+
+\title{CMSC651 Assignment 2}
+\author{Yancy Liao, Fan Yang, Bowen Zhi}
+\date{\vskip -0.5emFebruary 2018}
+
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1}
+
+\begin{enumerate}[label=(\alph*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+
+    \item $\displaystyle \Pr{}(X \geq \mu(1+\delta)) = \Pr{}\left(e^{tX} \geq e^{t\mu(1+\delta)}\right)$, for some $t \in \mathbb{R}$. Note that both sides are now strictly positive, thus by Markov:
+    \vskip -1.75em
+        \begin{align*}
+        \Pr{}(X \geq \mu(1+\delta)) &\leq \frac{\Expect{\left[e^{tX}\right]}}{e^{t\mu(1+\delta)}} = e^{-t\mu(1+\delta)}\sum_k \left(e^{tk}e^{-\mu}\frac{\mu^k}{k!}\right) = e^{-\mu(t(1+\delta)+1)}\sum_k \left(\frac{(\mu{}e^t)^k}{k!}\right) \\
+        &= e^{-\mu(t(1+\delta)+1)}e^{\mu{}e^t} = e^{\mu(e^t-t(1+\delta)-1)}.
+        \end{align*}
+    \vskip -0.75em
+    Note that minimizing the above is the same as minimizing $g(t) = e^t-t(1+\delta)-1$, with respect to $t$, and that $g'(t) = e^t - 1 - \delta = 0$ when $t = \ln{(1+\delta)}$. Moreover, $g''(t) = e^t > 0 \;\forall\,t \in \mathbb{R}$, thus the bound is minimized for $t = \ln{(1+\delta)}$. Substituting this value of $t$ into our bound, we have:
+    \vskip -1.75em
+        \begin{align*}
+        \Pr{}(X \geq \mu(1+\delta)) &\leq e^{\mu(1+\delta-(1+\delta)\ln{(1+\delta)}-1)} = \left(\frac{e^{\delta}}{(1+\delta)^{(1+\delta)}}\right)^{\mu},
+        \end{align*}
+    \vskip -0.75em
+    which is exactly the same as the upper-tail Chernoff-Hoeffding bound derived in Lecture 15, Section 1.
+
+    \item $Y$ is a binomial distribution, thus $\Pr{}(Y=i) = \binom{n}{i}\left(\frac{\mu}{n}\right)^i\left(1 - \frac{\mu}{n}\right)^{n-i}$. Thus we have:
+    \vskip -1.75em
+        \begin{align*}
+        \lim_{n \rightarrow \infty} \Pr{}(Y=i) &= \lim_{x \rightarrow \infty} \frac{n!}{i!(n-i)!}\left(\frac{\mu}{n}\right)^i\left(1 - \frac{\mu}{n}\right)^{n-i} = \lim_{n \rightarrow \infty} \frac{n(n-1)\dots(n-i+1)}{i!}\left(\frac{\mu}{n}\right)^i\left(1 - \frac{\mu}{n}\right)^{n-i} \\
+        &= \frac{\mu^i}{i!} \lim_{n \rightarrow \infty} \frac{n(n-1)\dots(n-i+1)}{n^i} \left(1 - \frac{\mu}{n}\right)^{n-i} = \frac{\mu^i}{i!} \lim_{n \rightarrow \infty} \left(1 - \frac{\mu}{n}\right)^{n-i},
+        \end{align*}
+    \vskip -0.75em
+    where the middle fraction approaches $1$ asymptotically since the numerator's expanded form consists of $n^i$ plus lower-order powers of $n$. Now observe that $\left(1 - \frac{\mu}{n}\right)^{n-i} = \exp{\left((n-i)\ln{(1 - \frac{\mu}{n})}\right)}$. Taking the Taylor expansion around $0$ of $\ln{(1-x)}$, we thus have:
+    \vskip -1.75em
+        \begin{align*}
+        \lim_{n \rightarrow \infty} \Pr{}(Y=i) &= \frac{\mu^i}{i!} \lim_{n \rightarrow \infty} \exp{\left((n-i)\left(-\frac{\mu}{n}-\mathcal{O}(\frac{1}{n^2})\right)\right)} = \frac{\mu^i}{i!} \lim_{n \rightarrow \infty} e^{-\mu(n-i)/n} = e^{-\mu}\frac{\mu^i}{i!}.
+        \end{align*}
+    \vskip -0.75em
+
+\end{enumerate}
+
+\section*{Problem 2}
+
+\begin{enumerate}[label=(\alph*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+
+    \item $\displaystyle \Pr{}(Y_i) = 1 - \Pr{}(\neg{}Y_i) = 1 - \left(1 - 1/n\right)^u = 1 - \left(1 - 1/n\right)^{\frac{n}{2}\ln{n}}.$ Since we are looking for the asymptotic behavior of this value, we can ignore the floor on $u$. Next, note that $\lim_{x \rightarrow \infty} (1-1/n)^n = e^{-1}$, thus:
+    \vskip -1.75em
+        \begin{align*}
+        \Pr{}(Y=i) &= 1 - \left(1 - 1/n\right)^{\frac{n}{2}\ln{n}} = 1 - \Theta{\left(e^{-\ln(n)/2}\right)} = 1 - \Theta{}\left(1/\sqrt{n}\right).
+        \end{align*}
+    \vskip -0.75em
+
+    \item Note that this scenario is equivalent to that of the ``balls and bins'' problem with $m = u$. Moreover, note that $\Pr{}(Y_i) = \Pr{}(X_i \geq 1)$. Thus:
+    \vskip -1.75em
+        \begin{align*}
+        \Pr{}(W \leq u) &= \Pr{}\left(\bigwedge_{i=1}^n Y_i\right) = \Pr{}\left(\bigwedge_{i=1}^n (X_i \geq 1)\right) \leq \prod_{i=1}^n \Pr{}(X_i \geq 1) = \prod_{i=1}^n \Theta{}\left(1 - 1/\sqrt{n}\right) \\
+        &= \Theta{}\left((1 - 1/\sqrt{n})^n\right) = \Theta{\left(\left((1 - 1/\sqrt{n})^{\sqrt{n}}\right)^{\sqrt{n}}\right)} = \Theta{}\left(e^{-\sqrt{n}}\right).
+        \end{align*}
+    \vskip -0.75em
+
+\end{enumerate}
+
+\section*{Problem 3}
+
+\begin{enumerate}[label=(\alph*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+
+    \item Yes. Suppose $x \in L_{1} \cup L_{2}$. Then there exist polynomial-time verifiers $C_1(s, t)$ and $C_2(s, t)$ for $L_1$ and $L_2$, respectively, and certificate $t_i$ which enables $x$ to be accepted by $C_1$ or $C_2$. Then we can create a new verifier, $C_{\cup}(s, t)$, which we define as taking in a string and certificate, feeding this input into $C_1$, returning "yes" if $C_1$ returns "yes", and otherwise feeding its input into $C_2$ and returning whatever $C_2$ does. We see that so long as $t_i$ is a certificate for $x$ for either one of $C_1$ or $C_2$, it will also be a certificate of $x$ for $C_{\cup}$, and so $C_{\cup}$ is a polynomial-time verifier for $L_{1} \cup L_{2}$, and therefore $L_{1} \cup L_{2}$ is in $NP$.
+
+    \item No not necessarily, because if this were the case, we could simply take $\emptyset \cup \overline{L_2} = \overline{L_2}$ to be in $NP$, and so $NP$ would be equal to $co\,\text{-}NP$, which is a known open problem.
+
+\end{enumerate}
+
+\section*{Problem 4}
+
+\begin{enumerate}[label=(\alph*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+
+    \item Let $I$ denote the indices $i$ of the subsets in the solution, $S_i$ denote the $i$th subset, and $\hat{S}_i$ denote the modified subset $S_i$ (i.e., $S_i$ with some elements removed). The algorithm 1.2 from Williamson-Shmoys can be slightly modified to give the algorithm below:
+    
+\begin{spacing}{1.2}
+    \begin{mdframed}
+    		$I \leftarrow \emptyset \\
+		\hat{S}_j \leftarrow S_j \quad \forall j \\
+		\textbf{while} \; |\bigcup_{j \in I}^{} S_j| < p|E| \; \textbf{do} \\
+		\hspace*{16pt} l \leftarrow \operatorname*{arg\,min}_{j: \hat{S}_j \neq \emptyset} 
+		{\frac{w_j}{|\hat{S}_j|}} \\
+		\hspace*{16pt} I \leftarrow I \cup \{l\} \\
+		\hspace*{16pt} \hat{S}_j \leftarrow \hat{S}_j - \hat{S}_l \quad \forall j$
+	\end{mdframed}
+\end{spacing}
+\vskip -1ex
+Let n = $|E|$. In the following analysis and in problem (b) as well, we assume $pn$ is an integer (this can be achieved by simply taking the ceiling of $pn$ if $pn$ is a fractional). The algorithm can run no more than $pn$ rounds, and in each round it computes $\mathcal{O}(m)$ ratios, each in constant time, thus it finishes in polynomial time.
+\vskip 0.5ex
+It is proved in the textbook that the $k$th covered element in the solution has cost no more than OPT/($n - k + 1$), therefore the total cost of the first $pn$ added elements is:
+\begin{align*}
+\sum_{i = 1}^{pn} cost(e_i) &\leq \sum_{i = 1}^{pn}\frac{\mathrm{OPT}}{n - i + 1} \hspace*{10em}\\
+		&=\mathrm{OPT} \sum_{j = n - pn + 1}^{n} \frac{1}{j}\\
+		&=(H_n - H_{n-pn})\mathrm{OPT}\\
+		&\leq \big(1 + \ln{n} - \ln{(n - pn)}\big)\mathrm{OPT}\\
+		&=\Big(1 + \ln{\Big(\frac{1}{1-p}\Big)}\Big)\mathrm{OPT}
+\end{align*}
+where the final inequality follows because $\ln{n} < H_n < 1 + \ln{n}$.
+\vskip 0.5ex
+The last set added to the solution may introduce more covered elements than necessary, incurring a total cost greater than the bound calculated above. However, the extra cost cannot be more than OPT. Thus, for the value of our final solution, i.e., $\sum_{j \in I}{w_j}$, we have:
+\begin{align*}
+\sum_{j \in I}{w_j} \leq \sum_{i = 1}^{pn} cost(e_i) + \mathrm{OPT} = \Big(1 + \ln{\Big(\frac{1}{1-p}\Big)}\Big)\mathrm{OPT} + \mathrm{OPT} = \Big(2 + \ln{\Big(\frac{1}{1-p}\Big)}\Big)\mathrm{OPT}
+\end{align*}
+	
+	\item The algorithm proposed in (a) can be slightly modified to give an $f(p)$-approximation algorithm for the partial cover problem. 
+	\vskip 0.5ex
+	Let $m$ denote the number of elements that remain to be covered at the start of the current iteration, i.e., $m = np - |\sum_{j \in I}S_j|$ where $I$ is the partial solution. In this modified algorithm, instead of taking the set corresponding to the minimum of $\frac{w_j}{|\hat{S}_j|}$, we will take the set corresponding to the minimum of $\frac{w_j}{\min (m,\, |\hat{S}_j|)}$. This modification is made to ensure that only $np$ elements are covered in the final solution. The modified algorithm is shown below:
+	
+\begin{spacing}{1.2}
+	\begin{mdframed}
+    		$I \leftarrow \emptyset \\
+		\hat{S}_j \leftarrow S_j \quad \forall j \\
+		m \leftarrow np\\
+		\textbf{while} \; m > 0 \; \textbf{do} \\
+		\hspace*{16pt} l \leftarrow \operatorname*{arg\,min}_{j: \hat{S}_j \neq \emptyset} 
+		{\frac{w_j}{\min (m,\,|\hat{S}_j|)}} \\
+		\hspace*{16pt} I \leftarrow I \cup \{l\} \\
+		\hspace*{16pt} m \leftarrow m - |\hat{S}_l| \\
+		\hspace*{16pt} \hat{S}_j \leftarrow \hat{S}_j - \hat{S}_l \quad \forall j$
+	\end{mdframed}
+\end{spacing}
+
+Let OPT$^*$ denote the value of an optimal solution to the partial cover problem. At each iteration, the optimal solution must contain at least $m$ elements that currently are not in our greedy selection, therefore, at each iteration we can always find a subset that covers its elements with an average weight of at most OPT$^*/m$. Let $m_k$ denote the value of $m$ at $k$th iteration. For the set $j$ chosen in the $k$th iteration, we have: 
+$$w_j \leq (m_k - m_{k+1})\frac{\text{OPT}^*}{m_k} = \frac{m_k - m_{k+1}}{m_k}\text{OPT}^*$$
+Let $l$ = the number of sets in our final solution. We have:
+\begin{align*}
+\sum_{j \in I}w_j &\leq \sum_{k = 1}^{l}\frac{m_k - m_{k+1}}{m_k}\text{OPT}^*\\
+	&\leq \text{OPT}^* \cdot \sum_{k=1}^{l}\Big(\frac{1}{m_k} + \frac{1}{m_k - 1} + \cdots + \frac{1}{m_{k+1} + 1} \Big)\\
+	&= \text{OPT}^* \cdot \sum_{i = 1}^{np} \frac{1}{i}\\
+	&= H_{pn} \cdot \text{OPT}^*
+\end{align*}
+where the second inequality follows from the fact that $\frac{1}{m_k} \leq \frac{1}{m_k - i}$ for each positive $i$.
+\vskip 0.5ex
+$H_{np}$ is nondecreasing in $p$. When $p = 1$, $H_{np} = H_n = H_{|E|}$.
+\end{enumerate}
+
+\section*{Problem 5}
+
+We first show a Karp reduction from the unweighted subset problem to the Steiner directed subtree problem. We start by making a root vertex. For each element in the set we are trying to cover, make a terminal vertex. For each subset we have, make a non-terminal vertex. Connect the root vertex to each of the subset vertices with an arc of weight 1, which represents the cost of 1 for choosing to go through that particular subset. Then connect each subset vertex with each of its element vertices using arcs of weight 0, which represents that if we chose to go through a particular subset vertex (incurring the cost of 1), we get all of its element terminal vertices for free. So if we find a minimal subtree that covers every terminal vertex, we must have gone through a minimal number of subset vertices, and this exactly corresponds to a selection of the minimal number of subsets which covers every element of our set in the subset problem.
+
+\vskip 0.5em
+
+Hence, a $c\ln{|T|}$-approximation to the Steiner directed subtree problem could thus be used to create a $c\ln{|T|}$-approximation to the unweighted subset problem, and vice versa. But if such an approximation exists, then, as Theorem 1.14 from Williamson-Shmoys states, $P=NP$.
+
+\end{document}

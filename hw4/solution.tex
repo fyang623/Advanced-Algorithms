@@ -1,0 +1,118 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{titling}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{adjustbox}
+\usepackage[framemethod=TikZ]{mdframed}
+
+\topmargin 0.0in
+\oddsidemargin 0.0in
+\textwidth 6.5in
+\textheight 9.0in
+\headheight 0.0in
+\headsep 0.0in
+\linespread{1.0}
+
+\pretitle{\begin{center}\LARGE}
+\posttitle{\par\end{center}}
+\preauthor{\begin{center}\large\begin{tabular}[t]{c}}
+\postauthor{\end{tabular}\par\end{center}}
+\predate{\begin{center}}
+\postdate{\par\end{center}}
+
+\setlength{\droptitle}{-5em}
+\setlength\parindent{0pt}
+\setlength{\parskip}{0.5em}
+
+\DeclareMathOperator{\Expect}{E}
+\DeclareMathOperator{\Variance}{Var}
+
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\argmax}{argmax}
+
+\DeclarePairedDelimiter{\ceil}{\expandafter\lceil}{\expandafter\rceil}
+\DeclarePairedDelimiter{\floor}{\expandafter\lfloor}{\expandafter\rfloor}
+
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+
+\title{CMSC651 Assignment 4}
+\author{Yancy Liao, Fan Yang, Bowen Zhi}
+\date{\vskip -0.5em April 2018}
+
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1}
+
+Consider the following algorithm: initially, we have $n$ elements to add up. Task processor $i$ for $i \in \{1,2,\dots,\ceil{n/2}\}$ with adding up elements $2i - 1$ and $2i$ (and possibly only $2i - 1$ for the last processor if $n$ is odd). Now we add these $\ceil{n/2}$ partial sums outputted by each processor in a similar fashion: task processor $i \in \{1,2,\dots,\ceil{\ceil{n/2}/2}\}$ with adding up the partial sums $2i$ and $2i - 1$. We continue this process until we have $2$ partial sums remaining, at which point a single processor adds these up and then outputs the final sum.
+
+Note that at each step we reduce the problem size by $2$. Moreover, at each step, each processor executes $\mathcal{O}(1)$ operations, all of which without any memory contention. Thus each step is done in $\mathcal{O}(1)$ time on a EREW PRAM. Thus the total runtime of the algorithm is dictated by $T(n) = T(n/2) + \mathcal{O}(1),\; T(1) = \mathcal{O}(1)$. We can see that this is $\mathcal{O}(\log{}(n))$ as follows: Suppose that $k = \log_2{}(n)$. Then we have:
+
+\vskip -1.75em
+\begin{align*}
+T(n) &= T(2^k) = T(2^{k-1}) + \mathcal{O}(1) = T(2^{k-2}) + 2\cdot\mathcal{O}(1) = \dots = T(2^0) + k\cdot\mathcal{O}(1) = (k+1)\cdot\mathcal{O}(1) \\
+&= \mathcal{O}(k) = \mathcal{O}(\log{}(n)).
+\end{align*}
+\vskip -1em
+
+\section*{Problem 2}
+
+Let $N$ be the number of vertices in the longest path in $G$. We show $\ell = N$ by showing $\ell \leq N$ and $\ell \geq N$.
+
+First, observe that at iteration $i$ of the while loop, each of the vertices $v^{(i)}$ we remove is part of a path consisting of at least $i$ vertices in our original graph $G$. To see this, note that $v^{(i)}$ must have not been a source in any previous iteration (otherwise we would have removed it then). Moreover, this means that at the previous iteration, there was an edge to $v^{(i)}$ from one of the vertices $v^{(i-1)}$ we removed in iteration $i-1$. By similar reasoning, we see that we must also have an edge to $v^{(i-1)}$ from one of the vertices $v^{(i-2)}$ removed in iteration $i-2$. Tracing this back all the way to iteration $1$, we see that $G$ must have a path with vertices $v^{(1)}, v^{(2)}, \dots, v^{(i)}$, hence $v^{(i)}$ is part of a path consisting of at least $i$ vertices. Since $A$ partitions $G$ into $L(1),L(2),\dots,L(\ell)$, then it must have reached iteration $\ell$. Therefore there must be a path consisting of at least $\ell$ vertices in $G$. Hence, by definition, the longest path in $G$ must also have at least $\ell$ vertices, so $\ell \leq N$.
+
+Next, suppose $\ell < N$. Thus there exists a path $P$ consisting of vertices $v_1,v_2,\dots,v_N$ in $G$, where $v_1$ is a source and $v_N$ a sink. If $A$ terminates after iteration $\ell$, then all of these vertices were removed in these iterations. But note that in the first iteration, $v_1$ is the only vertex in $P$ that can be removed. Moreover, this removal can only make $v_2$ a source, as there are still edges to $v_i,\; i \in \{3,4,\dots,N\}$ from $v_{i-1}$. Hence in the second iteration, only $v_2$ can be removed, which by the same logic can only make $v_3$ a source. Thus we see that after iteration $\ell$, at best we have removed $v_1,v_2,\dots,v_{\ell}$. Since $\ell < N$, $v_N$ must not have been removed, which contradicts the termination condition of $A$. Hence $\ell \geq N$.
+
+We have shown $\ell \leq N$ and $\ell \geq N$, thus it must be that $\ell = N$.
+
+\newpage
+
+\section*{Problem 3}
+
+\begin{enumerate}[label=(\alph*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+
+\item Given that $M = (S, \mathcal{I})$ is a matroid, we show that the three properties of a matroid hold for $M^* = (S, \mathcal{I}^*)$.
+
+\begin{enumerate}[label=(\roman*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+    
+    \item $\emptyset$ is clearly a subset of $S$, and $S \setminus \emptyset = S$, which clearly contains a basis for $M$. Hence $\emptyset \in \mathcal{I}$.
+    
+    \item Suppose $A \in \mathcal{I}^*$ and $B \subseteq A$. By the definition of $\mathcal{I}^*$, we know that $S \setminus A$ contains a basis of $M$. Since $B \subseteq A$, $S \setminus B$ contains that same basis of $M$, and therefore $B \in \mathcal{I}^*$ by the definition of $\mathcal{I}^*$.
+    
+    \item Suppose $A, B \in \mathcal{I}^*$ and $\left\vert{B}\right\vert > \left\vert{A}\right\vert$. Then $S \setminus A$ has a basis and $S \setminus B$ has a basis. There are two possibilities we wish to consider:
+    
+    \begin{enumerate}[label=(\arabic*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+    
+        \item Suppose there exists a basis in $S \setminus A$, for which it fails to contain some element $x^* \in B \setminus A$. Then if we take $A \cup \{x^*\}$, clearly $S \setminus A \cup \{x^*\}$ has a basis, namely the one we started with originally, and so $A \cup \{x^*\} \in \mathcal{I}$ and we are done.
+        
+        \item Suppose that every basis in $S \setminus A$ contains $B \setminus A$. We will prove there is a contradiction, and hence that this case is impossible. 
+        
+        Let $\mathcal{B}_1$ be a basis in $S \setminus A$. Let $\mathcal{B}_2$ be a basis in $S \setminus B$. By our supposition, $\mathcal{B}_1 \supseteq (B \setminus A)$. Let $D := (A \setminus B) \cap \mathcal{B}_2$, in other words, simply all elements in the basis $\mathcal{B}_2$ which lie in $A$ (since by assumption, $\mathcal{B}_2$ has already excluded elements of $B$). By the fact that $B$ is bigger than $A$, $\left\vert{B \setminus A} \right\vert > \left\vert{A \setminus B}\right\vert$, which then clearly implies that $\left\vert{B \setminus A} \right\vert > \left\vert{D}\right\vert$. 
+        
+        We perform an iterative process: we remove each element in $D$ from our basis $\mathcal{B}_2$. Using the third property of matroids, we replace each with an element from $\mathcal{B}_1$ (that doesn't already exist in $\mathcal{B}_2$). Each element from $\mathcal{B}_1$ will necessarily be in $S \setminus A$. So at the end of this iterative process, the basis $\mathcal{B}_2$ will no longer contain any elements from $A$ anymore, and so $\mathcal{B}_2$ will also be a basis in $S \setminus A$. 
+        
+        Since the iterative process proceeded only $D$ times and $\mathcal{B}_1$ contains all of the comparatively greater number of elements in $B \setminus A$, there must exist an element $x' \in (B \setminus A)$ which lies in $\mathcal{B}_1$ but which was not introduced into $\mathcal{B}_2$. We remove $x'$ from $\mathcal{B}_1$ and, using the third property of matroids, replace it with $x''$ from $\mathcal{B}_2$ (that doesn't already exist in $\mathcal{B}_1$). First note that $x'' \in S \setminus A$ since we showed above that $\mathcal{B}_2$ is now a basis in $S \setminus A$ after the iterative process concluded. Furthermore, $x'' \neq x'$ since $x' \not \in \mathcal{B}_2$. Hence, our newly produced basis $\mathcal{B}_1^*$ is both a basis in $S \setminus A$, but is also missing an element $x' \in (B \setminus A)$, which contradicts our original assumption that every basis in $S \setminus A$ contains $B \setminus A$ in its entirety. 
+
+    \end{enumerate}
+
+\end{enumerate} 
+
+\item We consider two cases:
+
+\begin{enumerate}[label=(\arabic*),topsep=0pt,itemsep=1ex,partopsep=1ex,parsep=1ex]
+
+    \item Suppose $T$ is independent, or $T \in \mathcal{I}^*$. Then, by definition of $\mathcal{I}^*$, $S \setminus T$ contains a basis of $M$, so $r(S \setminus T) = r(S)$. According to the definition of the rank function, $r^*(T)$ is the size of the largest subset of $T$ which is independent, which in this case we know is $\left\vert{T}\right\vert$. On the right side of the equation, we verify indeed that $\left\vert{T}\right\vert - r(S) + r(S \setminus T) = \left\vert{T}\right\vert - 0 = \left\vert{T}\right\vert$ and hence the equation holds.
+    
+    \item Suppose $T$ is dependent, or $T \not \in \mathcal{I}^*$. Then by definition of $\mathcal{I}^*$, $S \setminus T$ does not contain a basis of $M$. Now consider that $r(S)$ refers to the size of a basis of $M$, and $r(S \setminus T)$ refers to the largest independent subset of $S \setminus T$. Since by the discussion in the textbook we are always able to iteratively build up a basis from any independent set, $r(S) - r(S \setminus T)$ is therefore the number of elements we would need to (and are able to) move over from $T$ to $S \setminus T$ in order to give $S \setminus T$ a basis. So, the size of the largest subset of $T$ which would qualify to be in $\mathcal{I}^*$ -- which is by definition referred to as $r^*(T)$ -- would then be equal to the total number of elements of $T$ minus the number of elements we would need to move over, or expressed as $T - (r(S) - r(S \setminus T)) = T - r(S) + r(S \setminus T)$. And so the equation holds here.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}

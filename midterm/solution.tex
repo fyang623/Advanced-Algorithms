@@ -1,0 +1,167 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{titling}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{adjustbox}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+
+\topmargin 0.0in
+\oddsidemargin 0.0in
+\textwidth 6.5in
+\textheight 9.0in
+\headheight 0.0in
+\headsep 0.0in
+\linespread{1.0}
+
+\pretitle{\begin{center}\LARGE}
+\posttitle{\par\end{center}}
+\preauthor{\begin{center}\large\begin{tabular}[t]{c}}
+\postauthor{\end{tabular}\par\end{center}}
+\predate{\begin{center}}
+\postdate{\par\end{center}}
+
+\setlength{\droptitle}{-5em}
+\setlength{\parskip}{0.5em}
+\setlength\parindent{0pt}
+
+\DeclareMathOperator{\Expect}{E}
+\DeclareMathOperator{\Var}{Var}
+
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+
+\title{CMSC651 Midterm 1\vspace{-0.5em}}
+\author{Fan Yang}
+\date{\vspace{-1em}March 2018}
+
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1}
+Let's define a new random variable $Z = \frac{1}{Y}$. Since $X$ and $Y$ are independent, $X$ and $Z$ are independent as well.\par
+In lecture 7 of $randlecnotes$ we know the following property: 
+\begin{center} 
+\vskip -0.5em
+If $X$ and $Y$ are independent random variables, then $E[XY] = E[X] \cdot E[Y]$
+\end{center}
+\vskip -0.5em
+Therefore we have:
+$$E[\tfrac {X}{Y}] = E[XZ] = E[X] \cdot E[Z] = E[X] \cdot E[\tfrac{1}{Y}] = ac$$
+
+\section*{Problem 2}
+Let $X_i$ be the random variable for the event that the $i$th element is a fixed point in a random permutation.
+\[
+ X_i = 
+ 	   \begin{dcases*}
+   		1 & if the $i$th point happens to be a fixed point\\
+   		0 & otherwise.
+  	   \end{dcases*}
+\]
+We know $E[X_i] = Pr[X_i = 1] = \frac{1}{n}$. By linearity of expectation, the expected number of fixed points in a random permutation is:
+$$E[X] = \sum_{i=1}^{n}E[X_i] = n \cdot \frac{1}{n} = 1$$
+By definition of expectation we also know that $E[X] = \sum_{k=0}^{n}k \cdot \mathrm{Pr}[X=k]$, where $\mathrm{Pr}[X=k] = \frac{p_n(k)}{n!}$. Thus we have:
+$$1 = \sum_{k=0}^{n}k \cdot \frac{p_n(k)}{n!} \quad$$
+which can be rewritten as:
+$$n!= \sum_{k=0}^{n}k \cdot p_n(k)$$
+
+\section*{Problem 3}
+\textbf{Note}: this answer is mainly adapted from chapter 1.7 of Shmoys-Williamson.\par
+Define two LP relaxations for the multi-objective cover problem as below:\par \newpage
+Problem 1 (P1):
+\begin{spacing}{1.1}
+	\vskip -3em
+	\begin{alignat*}{2}
+		\text{minimize} \quad \sum_{j=1}^{m}w_jx_j \\
+		\text{subject to} \ \sum_{j:e_i \in S_j}x_j &\geq 1, \qquad i=1, \cdots , n \hspace{10em} \\
+		x_j &\geq 0, \qquad j = 1, \cdots , m \\
+	\end{alignat*}		
+\end{spacing}
+\vskip -2em Problem 2 (P2):
+\begin{spacing}{1.1}
+	\vskip -3em
+	\begin{alignat*}{2}
+		\text{minimize} \quad \sum_{j=1}^{m}v_jx_j \\
+		\text{subject to} \ \sum_{j:e_i \in S_j}x_j &\geq 1, \qquad i=1, \cdots , n \hspace{10em} \\
+		x_j &\geq 0, \qquad j = 1, \cdots , m \\
+	\end{alignat*}		
+\end{spacing}
+\vskip -2emThese two problems can be solved in polynomial time. Let $x^*$ and $x^{\scriptscriptstyle \#}$ be the optimal solutions to P1 an P2 respectively, and let $Z_{IP}^{*}$ and $Z_{IP}^{\scriptscriptstyle \#}$ be the their values. Given $x^*$ and $x^{\scriptscriptstyle \#}$, the technique of \textit{randomized rounding} can be applied to obtain a solution $C$ to the integer program. \par
+Imagine there are $m$ biased coins $c_1^*, \cdots , c_m^*$ whose probabilities of coming up heads are $x_j^*, \cdots x_j^*$. We flip each of the coins $c\ln{n}$ times and include the corresponding set $S_j$ in the solution if at least one of the flips turns out to be a head. Let $P$ denote the solution constructed this way. We repeat the same procedures with m other coins whose whose probabilities of coming up heads are $x_j^{\scriptscriptstyle \#}, \cdots x_j^{\scriptscriptstyle \#}$, and name the yielded solution $Q$ \par
+Now let $C$ be the intersection of $P$ and $Q$, i.e., $C = P \cap Q$. We calculate the probability that a given element $e_i$ is not covered in $C$:
+\vskip -2em
+\begin{align*}
+	\Pr[\text{$e_i$ not covered in $C$}] &\leq \Pr[\text{$e_i$ not covered in $P$}] 
+		+ \Pr[\text{$e_i$ not covered in $Q$}] \hspace{5em} \\
+		&= \prod_{j:e_i \in S_j}(1 - x_j^*)^{c\ln{n}} 
+		+ \prod_{j:e_i \in S_j}(1 - x_j^{\scriptscriptstyle \#})^{c\ln{n}} \\
+		&\leq \prod_{j:e_i \in S_j} e^{-x_j^*(c\ln{n})} 
+		+ \prod_{j:e_i \in S_j} e^{x_j^{\scriptscriptstyle \#}(c\ln{n})} \\
+		&= e^{-(c\ln{n})\sum_{j:e_i \in S_j}x_j^*} 
+		+ e^{-(c\ln{n})\sum_{j:e_i \in S_j}x_j^{\scriptscriptstyle \#}} \\
+		&\leq \frac{1}{n^c} + \frac{1}{n^c} = \frac{2}{n^c}
+\end{align*}
+So the probability that $C$ is a set cover is: \vskip -1em
+$$\Pr[\text{$C$ is a set cover}] \geq 1 - \sum_{i=1}^{n}\Pr[\text{$e_i$ not covered in $C$}] \geq 1 - \frac{2}{n^{c}} \cdot n =  1 - \frac{2}{n^{c-1}} \hspace{2em}$$
+We now only need to prove that the expected value of $C$ is bounded by $3W\ln{n}$ and $3V\ln{n}$ given that $C$ is a set cover. Let $p_j(x_j^*)$ be the probability that a given subset $S_j$ is included in $P$ as a function of $x_j^*$. Since the probability of getting a head at each flip of the coin $c_j^*$ is $x_j^*$, the probability of getting at least one head with $c\ln{n}$ flips is bounded by $(c\ln{n})x_j^*,\ i.e.,\ p_j(x_j^*) \leq (c\ln{n})x_j^*$. In fact, we have $0 \leq p_j(x_j^*) \leq \min(1, c\ln{n})$ because $p_j(x_j^*) \in [0, 1]$. Similarly, we can derive $0 \leq p_j(x_j^{\scriptscriptstyle\#}) \leq \min(1, c\ln{n})$. \par
+Let $X_j$ be a random variable that is 1 if the subset $S_j$ is included in $C$, and 0 otherwise. Then:
+$$\Pr[X_j=1] = p_j(x_j^*) \cdot p_j(x_j^{\scriptscriptstyle\#})$$
+So the expectation of the weight function $\sum_{j \in C}w_j$ is:
+\begin{align*}
+	E\Bigg[\sum_{j \in C}w_j\Bigg]
+	&= E\Bigg[\sum_{j=1}^{m}w_jX_j\Bigg]
+	= \sum_{j=1}^{m}w_j\Pr[X_j=1] 
+	= \sum_{j=1}^{m}w_j \cdot p_j(x_j^*) \cdot p_j(x_j^{\scriptscriptstyle\#}) \\
+	&\leq \sum_{j=1}^{m}w_j \cdot p_j(x_j^*) 
+	\leq \sum_{j=1}^{m}w_j \cdot (c\ln{n})x_j^* 
+	= (c\ln{n})\sum_{j=1}^{m}w_jx_j^* 
+	= (c\ln{n})Z_{LP}^{*} \leq (c\ln{n})W
+\end{align*}
+$E\big[\sum_{j \in C}v_j\big] \leq (c\ln{n})V$ can be proved by the same procedure. \par
+Let $F$ be the event that $C$ is a set cover, and let $\bar{F}$ be the complement of it. In the previous discussion we have shown that $\Pr[F] \geq 1 - \frac{2}{n^{c-1}}$. We also know:
+$$E\Bigg[\sum_{j \in C}w_j\Bigg] = E\Bigg[\sum_{j \in C}w_j\Bigg|F\Bigg]\Pr[F] 
++ E\Bigg[\sum_{j \in C}w_j\Bigg|\bar{F}\Bigg]\Pr[\bar{F}]$$
+Thus
+\begin{align*}
+	E\Bigg[\sum_{j \in C}w_j\Bigg|F\Bigg] 
+	&= \frac{1}{\Pr[F]}\Bigg(E\Bigg[\sum_{j \in C}w_j\Bigg] 
+	- E\Bigg[\sum_{j \in C}w_j\Bigg|\bar{F}\Bigg]\Pr[\bar{F}]\Bigg) \\
+	&\leq \frac{1}{\Pr[F]} \cdot E\Bigg[\sum_{j \in C}w_j\Bigg] \\
+	&\leq \frac{(c\ln{n})W}{1 - \frac{2}{n^{c-1}}} \\
+	&\leq 3W\ln{n} \quad \text{(if $c = 2$ and $n \geq 6$)}
+\end{align*}
+Similarly, we can prove $E[\sum_{j \in C}v_j|F] \leq 3V\ln{n}$ when $c = 2$ and $n \geq 6$.\par
+It's obvious that the algorithm runs in polynomial time (solve two LP relaxations and flip coins $\mathcal{O}(cm\ln{n})$ times).
+
+\section*{Problem 4}
+Let $i = 0, 1, \cdots$ be the indices of the intervals, and let $a_i$ be the left-end point of the $i$th interval and $b_i$ be the length of the $i$the interval. A better rounding-down scheme is to make $a_0 = T/k$ and $b_i = \frac{T}{k^2}(1+\frac{1}{k})^i$. Note that we can make $a_0 = T/k$ because all long jobs have length greater than $T/k$. We will now show that the total number of intervals is $\mathcal{O}(k\ln{k})$.\par
+For any $a_i$, we have:
+\begin{align*}
+	a_i = a_0 + \sum_{k=0}^{i-1}b_k = \frac{T}{K} + \sum_{k=1}^{i-1}\frac{T}{k^2}\Big(1+\frac{1}{k}\Big)^k 
+	= \frac{T}{K} + \frac{T}{k^2} \cdot \frac{(1+\frac{1}{k})^i - 1}{(1 + \frac{1}{k}) - 1} 
+	= \frac{T}{k}\Big(1+\frac{1}{k}\Big)^i
+\end{align*}
+Consider the largest $a_l$. We know: 	\vskip -0.5em
+$$a_l = \frac{T}{k}\Big(1+\frac{1}{k}\Big)^l < T \hspace{10em}$$
+$$\Longrightarrow \hspace{2.5em} \Big(1+\frac{1}{k}\Big)^l < k \hspace{15em}$$
+$$\hskip 2em \Longrightarrow \hspace{1,5em} l < \log_{(1 + \frac{1}{k})}{k} < \frac{\ln{k}}{\ln{(1+\frac{1}{k})}}
+	= \frac{\ln{k}}{\frac{1}{k} - \frac{1}{2k^2} + \frac{1}{3k^3} \cdots} \approx k\ln{k}$$
+Therefore, with this rounding-down strategy there are at most $n^{\mathcal{O}(k\ln{k})}$ distinct inputs to the intervals. We then can use the same dynamic programming method as described in chapter 3.2 to determine whether or not there exists a feasible schedule that processes these rounded long jobs within time $T$. This dynamic programming subroutine finishes within time of $n^{\mathcal{O}(k\ln{k})}$. Assume it finds a feasible schedule $S$ for a given $T$ for the rounded long jobs. We now prove that the schedule has a value of at most $(1 + \frac{1}{k})T$ when it's applied to the original long jobs.\par
+We have a very simple observation, that is, for each interval $i$: 
+$$\frac{b_i}{a_i} = \frac{\frac{T}{k^2}\big(1+\frac{1}{k}\big)^i}{\frac{T}{k}\big(1+\frac{1}{k}\big)^i} = \frac{1}{k}$$
+Hence, for each job $j \in S$, the difference between its true processing requirement and its rounded one is at most $1/k$. This leads to the following conclusion,
+$$\sum_{j \in S}p_j \leq T + \frac{1}{k} \cdot T = \Big(1+\frac{1}{k}\Big)T$$
+Finally, we need to convert the above algorithm into a PTAS. Here the same bisection search procedure discussed for Theorem 3.7 can be adopted without modification. Below is a brief summary of it.\par 
+The optimal makespan for the scheduling input is within the interval $[L_0, U_0]$, where
+$$L_0 = \max\Bigg\{\Bigg\lceil\sum_{j=1}^{n}p_j/m\Bigg\rceil, \max_{j=1,\cdots,n}p_j\Bigg\}$$
+and
+$$U_0 = \Bigg\lceil\sum_{j=1}^{n}p_j/m\Bigg\rceil + \max_{j=1,\cdots,n}p_j$$
+In each iteration where the current interval is $[L, U]$, we set $T =\lfloor(L + U)/2\rfloor$, and run the DP subroutine on the rounded long jobs, where $k = \lceil 1/\epsilon \rceil$. If the subroutine produces a schedule, then update $U \leftarrow T$; otherwise, update $L \leftarrow T + 1$. The bisection repeats polynomial times until $L = U$, at which point, the DP subroutine outputs the schedule associated with $L$. We know $C_{max}^* \geq L$, and that the final schedule output by the subroutine is at most $(1+\epsilon)L \leq (1+\epsilon)C_{max}^{*}$, so the algorithm is a PTAS.
+
+\end{document}
